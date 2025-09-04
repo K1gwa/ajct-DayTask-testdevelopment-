@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { GoalsContext } from "../context/GoalsContext"
+import { GoalsContext } from "../contexts/Goalscontext"
 
-export function useGoals() {    
+export function useGoals() {
   const context = useContext(GoalsContext)
 
   if (!context) {
@@ -10,3 +10,4 @@ export function useGoals() {
 
   return context
 }
+
