@@ -15,7 +15,7 @@ export default function GoalsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Your Goals niga',
+            title: 'Your Goals',
             tabBarIcon: ({ focused }) => (
               <Ionicons
                 size={24}
@@ -25,10 +25,11 @@ export default function GoalsLayout() {
             ),
           }}
         />
+        
         <Tabs.Screen
           name="create"
           options={{
-            title: 'Create niga Goal',
+            title: 'Create Goal',
             tabBarIcon: ({ focused }) => (
               <Ionicons
                 size={24}
