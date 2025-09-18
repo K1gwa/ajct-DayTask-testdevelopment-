@@ -1,27 +1,27 @@
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, Pressable, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, Pressable, View, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 
-const Signup = () => {
+const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const router = useRouter()
 
-  const handleSignup = () => {
+  const handleLogin = () => {
+    // Replace this with your authentication logic
     if (email === '' || password === '') {
       Alert.alert('Error', 'Please enter both email and password.')
       return
     }
-    Alert.alert('Success', `Account created for ${email}`)
-    // Add your sign-up logic here
-    // Optionally navigate to login or home
-    router.push('/goals/login')
+    // Example: successful login
+    Alert.alert('Success', `Logged in as ${email}`)
+    // Navigate to another screen if needed
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -37,19 +37,20 @@ const Signup = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Pressable style={styles.button} onPress={handleSignup}>
-        <Text style={{ color: 'white' }}>Sign Up</Text>
+      <Pressable style={styles.button} onPress={handleLogin}>
+        <Text style={{ color: 'white' }}>Login</Text>
       </Pressable>
 
-      <Pressable style={styles.signInTab} onPress={() => router.push('/goals/login')}>
-        <Text style={{ color: '#21cc8d' }}>Already have an account? Login</Text>
+      <Pressable style={styles.logintab} onPress={() => router.push('/sign/signup')}>
+        <Text style={{ color: '#21cc8d' }}>Dont have an account? Signup</Text>
       </Pressable>
-      
+
     </SafeAreaView>
+
   )
 }
 
-export default Signup
+export default Login
 
 const styles = StyleSheet.create({
   container: {
@@ -74,10 +75,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 20,
     alignItems: 'center',
-    width: 300,
+    width:300,
+
   },
-  signInTab: {
+   loginInTab: {
     marginTop: 20,
     alignItems: 'center',
   },
-  })
+})

@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from "@expo/vector-icons"
-import {GoalsProvider} from '../../contexts/Goalscontext'
+import {GoalsProvider} from '../../context/Goalscontext'
 
 export default function GoalsLayout() {
 
@@ -15,7 +15,7 @@ export default function GoalsLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Your Goals',
+            title: 'Your Tasks',
             tabBarIcon: ({ focused }) => (
               <Ionicons
                 size={24}
@@ -29,7 +29,7 @@ export default function GoalsLayout() {
         <Tabs.Screen
           name="create"
           options={{
-            title: 'Create Goal',
+            title: 'Create a Task',
             tabBarIcon: ({ focused }) => (
               <Ionicons
                 size={24}

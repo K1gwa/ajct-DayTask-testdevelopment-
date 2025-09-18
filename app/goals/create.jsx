@@ -22,7 +22,7 @@ const Create = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Create a New Goal</Text>
+      <Text style={styles.title}>Create a New Task</Text>
 
       <TextInput
         style={styles.input}
@@ -32,7 +32,7 @@ const Create = () => {
       />
 
       <Pressable onPress={handleSubmit} style={styles.button}>
-        <Text style={{color: 'white'}}>Add New Goal</Text>
+        <Text style={{color: 'white'}}>Add New Task</Text>
       </Pressable>
     </SafeAreaView>
   )
