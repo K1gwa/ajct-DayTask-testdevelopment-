@@ -1,14 +1,14 @@
 import { Stack } from "expo-router"
-import { StatusBar } from "expo-status-bar"
+import { UsersProvider } from "../context/UsersContext"
 
-export default function RootLayout() {
+export default function Layout() {
   return (
-    <>
-      <StatusBar style="auto" />
-      <Stack>
-        <Stack.Screen name="goals" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+    <UsersProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="sign/signup" />
+        <Stack.Screen name="sign/login" />
+        <Stack.Screen name="home" />
       </Stack>
-    </>
+    </UsersProvider>
   )
 }
