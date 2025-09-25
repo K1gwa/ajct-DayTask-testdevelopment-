@@ -11,16 +11,16 @@ import {
   query,
   orderBy,
   updateDoc,
-  deleteDoc,
   doc,
 } from "firebase/firestore"
 
 export default function HomeScreen() {
-  const { profile, user, logout } = useUsers()
+  const { profile, user } = useUsers()
   const [task, setTask] = useState("")
   const [loading, setLoading] = useState(false)
   const [tasks, setTasks] = useState([])
   const [editTaskId, setEditTaskId] = useState(null)
+  const [weeklyCount, setWeeklyCount] = useState(0)
 
   useEffect(() => {
     if (!user) return
@@ -34,6 +34,18 @@ export default function HomeScreen() {
         ...doc.data(),
       }))
       setTasks(userTasks)
+
+      // ✅ Count completed tasks from last 7 days
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+      const completedThisWeek = userTasks.filter(
+        (t) =>
+          t.completed &&
+          t.completedAt?.toDate &&
+          t.completedAt.toDate() >= sevenDaysAgo
+      )
+      setWeeklyCount(completedThisWeek.length)
     })
 
     return () => unsubscribe()
@@ -56,6 +68,7 @@ export default function HomeScreen() {
           text: task,
           createdAt: serverTimestamp(),
           completed: false,
+          completedAt: null,
         })
       }
       setTask("")
@@ -71,14 +84,27 @@ export default function HomeScreen() {
     setEditTaskId(item.id)
   }
 
-  const handleDeleteTask = async (id) => {
+  // ✅ Mark as completed & set completedAt timestamp
+  const handleCompleteTask = async (id) => {
     try {
       const taskRef = doc(db, "users", user.uid, "tasks", id)
-      await deleteDoc(taskRef)
-      Alert.alert("Well done", "Task has been deleted!")
+      await updateDoc(taskRef, { completed: true, completedAt: serverTimestamp() })
+      Alert.alert("Great job!", "Task marked as completed ✅")
     } catch (err) {
       Alert.alert("Error", err.message)
     }
+  }
+
+  // ✅ Helper: format duration nicely
+  const getDuration = (createdAt, completedAt) => {
+    if (!createdAt?.toDate || !completedAt?.toDate) return ""
+    const diffMs = completedAt.toDate() - createdAt.toDate()
+    const diffMins = Math.floor(diffMs / 60000)
+    if (diffMins < 60) return `${diffMins} min`
+    const diffHrs = Math.floor(diffMins / 60)
+    if (diffHrs < 24) return `${diffHrs} hr ${diffMins % 60} min`
+    const diffDays = Math.floor(diffHrs / 24)
+    return `${diffDays} day(s)`
   }
 
   return (
@@ -106,7 +132,12 @@ export default function HomeScreen() {
           </Text>
         </Pressable>
       </View>
-<Text style={styles.subtt}>Your Tasks</Text>
+
+      <Text style={styles.subtt}>
+        Your Tasks <Text style={{ fontSize: 16, color: "#FFACAC" }}>
+          ({weeklyCount} done this week)
+        </Text>
+      </Text>
 
       <View style={[styles.card, { flex: 1 }]}>
         <FlatList
@@ -114,26 +145,44 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.taskItem}>
-              <Text style={styles.taskText}>{item.text}</Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={[
+                    styles.taskText,
+                    item.completed && { textDecorationLine: "line-through", color: "#888" }
+                  ]}
+                >
+                  {item.text}
+                </Text>
+                {item.completed && (
+                  <Text style={styles.durationText}>
+                    ⏱ {getDuration(item.createdAt, item.completedAt)}
+                  </Text>
+                )}
+              </View>
               <View style={styles.actions}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.editButton,
-                    pressed && { backgroundColor: "#e0a800" }
-                  ]}
-                  onPress={() => handleEditTask(item)}
-                >
-                  <Text style={styles.actionText}>Edit</Text>
-                </Pressable>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.deleteButton,
-                    pressed && { backgroundColor: "#b52a37" }
-                  ]}
-                  onPress={() => handleDeleteTask(item.id)}
-                >
-                  <Text style={styles.actionText}>Done</Text>
-                </Pressable>
+                {!item.completed && (
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.editButton,
+                      pressed && { backgroundColor: "#e0a800" }
+                    ]}
+                    onPress={() => handleEditTask(item)}
+                  >
+                    <Text style={styles.actionText}>Edit</Text>
+                  </Pressable>
+                )}
+                {!item.completed && (
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.deleteButton,
+                      pressed && { backgroundColor: "#b52a37" }
+                    ]}
+                    onPress={() => handleCompleteTask(item.id)}
+                  >
+                    <Text style={styles.actionText}>Done</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           )}
@@ -146,7 +195,7 @@ export default function HomeScreen() {
       <Pressable
         style={({ pressed }) => [
           styles.profileButton,
-          pressed && { backgroundColor: "#218838" }
+          pressed && { backgroundColor: "#500028ff" }
         ]}
         onPress={() => router.push("/profile/profilesc")}
       >
@@ -168,12 +217,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#FFACAC",
-    marginBottom: 18,
-    marginTop: 24,
-    width:"100%",
-    textAlignt:"left"
+    marginBottom: 5,
+    marginTop: 1,
+    width: "100%",
+    textAlign: "left"
   },
-    inputRow: {
+  inputRow: {
     flexDirection: "row",
     width: "100%",
     marginBottom: 18,
@@ -197,8 +246,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
-    height: 48,        
-    minWidth: 80,      
+    height: 48,
+    minWidth: 80,
     elevation: 3,
     shadowColor: "#004370ff",
     shadowOffset: { width: 0, height: 2 },
@@ -211,8 +260,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
-
-
   card: {
     width: "100%",
     maxWidth: 420,
@@ -248,6 +295,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   },
+  durationText: {
+    fontSize: 13,
+    color: "#444",
+    marginTop: 2,
+    fontStyle: "italic"
+  },
   actions: {
     flexDirection: "row",
     gap: 8,
@@ -279,7 +332,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   profileButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#a10051ff",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
@@ -292,17 +345,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  subtt:{
-  fontSize: 24,
-  fontWeight: "bold",
-  color: "#ff0000",
-  textShadowColor: "#0000ff",
-  textShadowOffset: { width: 2, height: 2 },
-  textShadowRadius: 4,
-  letterSpacing: 1,
-  fontStyle: "italic",
-  width:"100%",
-  textAlignt:"left"
-
+  subtt: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#ff0000",
+    textShadowColor: "#0000ff",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 1,
+    fontStyle: "italic",
+    width: "100%",
+    textAlign: "left"
   }
 })

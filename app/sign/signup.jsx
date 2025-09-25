@@ -54,7 +54,7 @@ export default function SignupScreen() {
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, { marginBottom: 0, flex: 1, borderWidth: 0 }]}
-            placeholder="Password"
+            placeholder="Password (atleast 6 characters)"
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
