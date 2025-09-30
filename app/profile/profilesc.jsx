@@ -9,6 +9,7 @@ export default function ProfileScreen() {
   const { user, profile, setProfile, logout } = useUsers()
   const [username, setUsername] = useState(profile?.username || "")
   const [saving, setSaving] = useState(false)
+
   const handleSave = async () => {
     if (!user) return
     try {
@@ -41,21 +42,25 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <Pressable style={styles.backButton} onPress={handleBack}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>← Back</Text>
       </Pressable>
 
-      <Text style={styles.title}>Profile</Text>
- <Text style={styles.inputLabel}>Edit Username</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter username"
-        value={username}
-        onChangeText={setUsername}
-      />
+      <Text style={styles.title}>My Profile</Text>
 
-      <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>Save Changes</Text>}
-      </Pressable>
+      <View style={styles.card}>
+        <Text style={styles.inputLabel}> Edit Username</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter username"
+          placeholderTextColor="#999"
+          value={username}
+          onChangeText={setUsername}
+        />
+
+        <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
+          {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>Save Changes</Text>}
+        </Pressable>
+      </View>
 
       <Pressable style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
@@ -69,70 +74,73 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     alignItems: "center",
-    backgroundColor: "#3E1E68"
+    backgroundColor: "#2A1F3D",
   },
   backButton: {
-    flexDirection: "row",
-    alignItems: "center",
     alignSelf: "flex-start",
-    marginBottom: 10,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: "#f0f0f0",
-    elevation: 2,
+    backgroundColor: "#ffffff15",
   },
-
   backText: {
     fontSize: 16,
-    color: "#007bff",
+    color: "#fff",
     fontWeight: "600",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 26,
+    fontWeight: "700",
+    marginBottom: 25,
+    color: "#fff",
+  },
+  card: {
+    width: "100%",
+    padding: 20,
+    borderRadius: 12,
+    backgroundColor: "#ffffff15",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
     marginBottom: 20,
-    color:"#ffffffff",
+  },
+  inputLabel: {
+    fontSize: 15,
+    color: "#e0e0e0",
+    marginBottom: 8,
+    fontWeight: "500",
   },
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: "#666",
+    borderRadius: 10,
     padding: 12,
-    marginTop: 20,
-    backgroundColor:"#f0f0f0",
+    color: "#fff",
+    backgroundColor: "#3b2b52",
   },
   saveButton: {
     marginTop: 20,
-    backgroundColor: "#007bff",
+    backgroundColor: "#4A90E2",
     padding: 15,
-    borderRadius: 8,
-    width: "100%",
+    borderRadius: 10,
     alignItems: "center",
   },
-  saveText: { color: "#fff",
+  saveText: {
+    color: "#fff",
     fontSize: 16,
-    fontWeight: "600"
+    fontWeight: "600",
   },
   logoutButton: {
-    marginTop: 20,
-    backgroundColor: "#dc3545",
+    backgroundColor: "#E94F37",
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
     width: "100%",
     alignItems: "center",
   },
-  logoutText: { color: "#fff",
+  logoutText: {
+    color: "#fff",
     fontSize: 16,
-    fontWeight: "600"
+    fontWeight: "600",
   },
-  inputLabel: {
-    alignSelf: "flex-start",
-    fontSize: 15,
-    color: "#d0feffff",
-    marginTop: 10,
-    marginBottom: 0,
-    fontWeight: "500",
-},
 })
